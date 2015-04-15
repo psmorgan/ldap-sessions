@@ -1,2 +1,5 @@
-.env*
+!etc/env
+etc/env/*.json
 node_modules
+manifest.yml
+
