@@ -30,7 +30,7 @@
   },
   "scripts": {
     "start": "node bin/server.js",
-    "test": "mocha"
+    "test": "mocha 'test/**/*.js'"
   },
   "author": "Phil Morgan <phil@psmorgan.co.uk>",
   "license": "ISC",
