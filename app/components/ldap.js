@@ -38,7 +38,6 @@ Ldap.prototype.authenticate = function (username, password) {
   }.bind(this);
 
   var auth = function (account) {
-
     var username        = account.sAMAccountName.toLowerCase()
     ,   passwordLength  = Array(password.length + 1).join('*');
     this.log.info('[%s] Attempting to authenticate %s (%s)', username, account.displayName, passwordLength);
@@ -51,13 +50,13 @@ Ldap.prototype.authenticate = function (username, password) {
           this.log.info('[%s] Authentication successful', username);
           return result;
         } else {
-          throw new Error('[%s] Authentication failed (not thrown)', username);
+          throw new Error('[' + username + '] Authentication failed (not thrown)');
         }
       })
       .catch(function (err) {
         if (err.code === 49) {
           this.log.info('[%s] Authentication failed (invalid credentials)', username);
-          return bb.reject('Authentication failed');
+          return bb.reject(new Error('Authentication failed'));
         } else {
           this.log.warn('[%s] Authentication failed (other reason)', username);
           return bb.reject(err);

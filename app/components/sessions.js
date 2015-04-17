@@ -4,7 +4,7 @@ var _             = require('lodash')
 
 exports = module.exports = function sessions (settings, log) {
 
-  var config    = settings.get('rs')
+  var config    = settings.get('rs') || {}
   ,   sessions  = new Sessions(config, log);
 
   return sessions;
@@ -36,6 +36,10 @@ function Sessions (config, log) {
 Sessions.prototype.create = function (username, ip) {
   var config = this.config;
 
+  if (!username || !ip) {
+    return bb.reject(new Error('No username or ip supplied to create session'));
+  }
+
   this.log.info('[%s] Creating session for user', username);
 
   return this._rs.createAsync({
@@ -54,6 +58,12 @@ Sessions.prototype.get = function (token) {
   return this._rs.getAsync({
       app: config.namespace
     , token: token
+  })
+  .then(function (result) {
+    if (!result) {
+      throw new Error('Unable to find token ' + token);
+    }
+    return result;
   });
 
 }

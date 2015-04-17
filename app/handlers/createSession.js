@@ -1,4 +1,5 @@
-var _ = require('lodash');
+var _   = require('lodash')
+,   bb  = require('bluebird');
 
 exports = module.exports = function createSessionRoute (rs, log, ldap) {
 
@@ -10,22 +11,23 @@ exports = module.exports = function createSessionRoute (rs, log, ldap) {
 
     if (!username || !password) {
       log.info('Username or password not supplied');
-      return res.sendStatus(401);
+      res.sendStatus(401);
+      return bb.resolve();
     }
 
-    ldap.authenticate(username, password)
+    return ldap.authenticate(username, password)
       .then(rs.create.bind(rs, username, ip))
       .then(function (result) {
         if (result.token) {
           log.info('[%s] Successfully created token %s', username, result.token);
-          res.json(result);
+          return res.json(result);
         } else {
           throw new Error('[' + username + '] Failed to create token.');
         }
       })
       .catch(function (err) {
         log.warn('[%s] Failed: %s', username, err);
-        res.sendStatus(401);
+        return res.sendStatus(401);
       });
 
   }
