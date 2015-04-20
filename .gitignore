@@ -1,5 +1,5 @@
 !etc/env
-etc/env/*.json
+etc/env/*.js
 node_modules
 manifest.yml
 

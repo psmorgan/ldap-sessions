@@ -4,8 +4,9 @@ exports = module.exports = function settings () {
   var settings = new Settings();
 
   settings.set('env', process.env.NODE_ENV || 'development');
-  var config = require(process.env.PWD + '/etc/env/' + settings.get('env') + '.json');
-  _.keys(config).forEach(function (key) {
+
+  var config    = this.App.config || {};
+  Object.keys(config).forEach(function (key) {
     settings.set(key, config[key]);
   });
 
