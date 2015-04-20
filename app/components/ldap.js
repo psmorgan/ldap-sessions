@@ -32,8 +32,14 @@ Ldap.prototype.authenticate = function (username, password) {
     attempts++;
     this.log.info('[%s] Searching for user (attempt %s)', username, attempts);
 
-    return client.findUserAsync(username)
-      .timeout(5000);
+    return new bb(function (resolve, reject) {
+
+      client.findUser(username, function (err, user) {
+        if (err) reject(err);
+        resolve(user);
+      });
+
+    });
 
   }.bind(this);
 
