@@ -1,4 +1,4 @@
-var app = require('../app');
+var app = require(__dirname + '/../app');
 
 app.boot(function (err) {
   if (err) {

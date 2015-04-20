@@ -6,6 +6,7 @@ var port = process.env.VCAP_APP_PORT || 8080;
 
 var app = bootable(express());
 
+app.phase(require('bootable-environment')('etc/env'));
 app.phase(bootable.initializers('etc/init', app));
 app.phase(bootable.routes(__dirname + '/routes.js', app));
 app.phase(function listen (done) {
