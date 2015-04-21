@@ -4,7 +4,15 @@ exports = module.exports = function getSessionRoute (rs, log) {
 
     return rs.get(req.params.token)
       .then(function (result) {
-        res.json(result);
+        if (!result || !result.id) {
+          return res.status(404).json({});
+        } else {
+          return res.status(200).json({});
+        }
+      })
+      .catch(function (err) {
+        log.warn('Failed to get token: %s (%s)', err.message, req.params.token);
+        return res.status(404).json({});
       });
 
   }
