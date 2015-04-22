@@ -6,5 +6,6 @@ module.exports = function () {
 
   this.use(cors());
   this.use(bodyParser.json());
+  this.use(bodyParser.urlencoded({ extended: false }));
 
 };
