@@ -24,22 +24,12 @@ function Ldap (config, log) {
 
 Ldap.prototype.authenticate = function (username, password) {
 
-  var client    = this._client
-  ,   attempts  = 0;
+  var client = this._client;
 
   var find = function find () {
 
-    attempts++;
-    this.log.info('[%s] Searching for user (attempt %s)', username, attempts);
-
-    return new bb(function (resolve, reject) {
-
-      client.findUser(username, function (err, user) {
-        if (err) reject(err);
-        resolve(user);
-      });
-
-    });
+    this.log.info('[%s] Searching for user', username);
+    return client.findUserAsync(username);
 
   }.bind(this);
 
@@ -71,9 +61,13 @@ Ldap.prototype.authenticate = function (username, password) {
 
   }.bind(this);
 
-  return retry(find, { max_tries: 10 })
+  var time = process.hrtime();
+
+  return find()
+    .bind(this)
     .then(function (account) {
       if (!account) {
+        this.log.info('[%s] Unable to find user', username);
         throw new Error('[' + username + '] Unable to find user');
       }
       return account;
@@ -82,6 +76,9 @@ Ldap.prototype.authenticate = function (username, password) {
       return auth(account);
     })
     .then(function (result) {
+      var diff  = process.hrtime(time)
+      ,   taken = (parseInt(diff[0]) + parseFloat(diff[1] * 1.0e-9)).toFixed(2);
+      this.log.info('[%s] Authentication attempt took %ss', username, taken);
       if (result) {
         return result;
       } else {
