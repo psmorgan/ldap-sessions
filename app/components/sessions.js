@@ -36,33 +36,23 @@ function Sessions (config, log) {
   }
 }
 
-Sessions.prototype.create = function (username, ip, opts) {
+Sessions.prototype.create = function (username, ip) {
   var config = this.config;
 
   if (!username || !ip) {
     return bb.reject(new Error('No username or ip supplied to create session'));
   }
 
-  var sessionConfig = opts;
-
-  _.defaults(sessionConfig, {
+  var sessionConfig = {
       app: config.namespace
     , ttl: config.ttl
     , id:  username
     , ip:  ip
-  });
+  };
 
   this.log.info('[%s] Creating session for user', username);
 
-  return this._rs.createAsync(sessionConfig)
-    .bind(this)
-    .then(function (result) {
-      if (!sessionConfig.d) {
-        return result;
-      } else {
-        return this._rs.redis.setAsync('oauth:' + sessionConfig.d.accessToken, result.token);
-      }
-    });
+  return this._rs.createAsync(sessionConfig);
 
 }
 
