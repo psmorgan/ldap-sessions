@@ -31,23 +31,38 @@ function Sessions (config, log) {
   this.config = config;
   this._rs    = new RedisSessions(config);
   bb.promisifyAll(this._rs);
+  if (this._rs.redis) {
+    bb.promisifyAll(this._rs.redis);
+  }
 }
 
-Sessions.prototype.create = function (username, ip) {
+Sessions.prototype.create = function (username, ip, opts) {
   var config = this.config;
 
   if (!username || !ip) {
     return bb.reject(new Error('No username or ip supplied to create session'));
   }
 
-  this.log.info('[%s] Creating session for user', username);
+  var sessionConfig = opts;
 
-  return this._rs.createAsync({
+  _.defaults(sessionConfig, {
       app: config.namespace
     , ttl: config.ttl
     , id:  username
     , ip:  ip
   });
+
+  this.log.info('[%s] Creating session for user', username);
+
+  return this._rs.createAsync(sessionConfig)
+    .bind(this)
+    .then(function (result) {
+      if (!sessionConfig.d) {
+        return result;
+      } else {
+        return this._rs.redis.setAsync('oauth:' + sessionConfig.d.accessToken, result.token);
+      }
+    });
 
 }
 

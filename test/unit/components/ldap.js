@@ -34,7 +34,7 @@ describe('ldap.js', function () {
 
     before(function () {
 
-      ActiveDirectory.prototype.findUser = sinon.stub().yieldsAsync(null, findUserSuccess());
+      ActiveDirectory.prototype.findUserAsync = sinon.stub().resolves(findUserSuccess());
       ActiveDirectory.prototype.authenticateAsync = sinon.stub().resolves(true);
 
     });
@@ -55,7 +55,7 @@ describe('ldap.js', function () {
 
     before(function () {
 
-      ActiveDirectory.prototype.findUser = sinon.stub().yieldsAsync(null, findUserSuccess());
+      ActiveDirectory.prototype.findUserAsync = sinon.stub().resolves(findUserSuccess());
       ActiveDirectory.prototype.authenticateAsync = sinon.stub().rejects(failedAuthenticationError());
 
     });
@@ -77,7 +77,7 @@ describe('ldap.js', function () {
 
     before(function () {
 
-      ActiveDirectory.prototype.findUser = sinon.stub().yieldsAsync(null);
+      ActiveDirectory.prototype.findUserAsync = sinon.stub().resolves(null);
 
     });
 
