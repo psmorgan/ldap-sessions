@@ -6,6 +6,7 @@ exports = module.exports = function tokenRoute (mongoose) {
   return function tokenInfo (req, res) {
 
     mongoose.models.accessTokens.findOne({ accessToken: req.params.tokenid })
+      .exec()
       .then(function (token) {
 
         if (!token) {
